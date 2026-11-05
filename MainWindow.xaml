@@ -1,0 +1,1186 @@
+﻿<Window x:Class="RobloxWorker.Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Robust"
+        Icon="Assets/Robust.ico"
+        Height="880" Width="1280"
+        MinHeight="760" MinWidth="1120"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize"
+        Foreground="{DynamicResource TextPrimary}"
+        FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <!-- ================= БАЗОВЫЕ СТИЛИ ================= -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="{DynamicResource BgCardAlt}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,9"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap" MaxWidth="330"
+                                   Foreground="{DynamicResource TextPrimary}" FontSize="11.5"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10" Padding="{TemplateBinding Padding}" MaxWidth="360">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SwitchCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <Border x:Name="SwitchTrack" Width="42" Height="24" CornerRadius="12"
+                                    Background="{DynamicResource BgInput}"
+                                    BorderBrush="{DynamicResource BorderStrong}" BorderThickness="1">
+                                <Grid>
+                                    <Ellipse x:Name="SwitchKnob" Width="18" Height="18"
+                                             Fill="{DynamicResource TextSecondary}"
+                                             HorizontalAlignment="Left" Margin="3,0,0,0"/>
+                                </Grid>
+                            </Border>
+                            <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="SwitchTrack" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="SwitchTrack" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="SwitchKnob" Property="Fill" Value="#FFFFFF"/>
+                                <Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="SwitchKnob" Property="Margin" Value="0,0,3,0"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="AppButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource BgCardAlt}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="BtnBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnBorder" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BtnBorder" Property="Opacity" Value="0.72"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="BtnBorder" Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource AppButton}"/>
+
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource AppButton}">
+            <Setter Property="Background" Value="{DynamicResource Accent}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource AppButton}">
+            <Setter Property="Background" Value="{DynamicResource Danger}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style x:Key="TabButton" TargetType="Button" BasedOn="{StaticResource AppButton}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="18,9"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Style.Triggers>
+                <Trigger Property="Tag" Value="active">
+                    <Setter Property="Background" Value="{DynamicResource BgCard}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ChromeButton" TargetType="Button">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ChromeBorder" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ChromeBorder" Property="Background" Value="{DynamicResource ChromeHover}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseChromeButton" TargetType="Button" BasedOn="{StaticResource ChromeButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ChromeBorder" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ChromeBorder" Property="Background" Value="{DynamicResource ChromeCloseHover}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource BgInput}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Accent}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="TxtBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="TxtBorder" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="TxtBorder" Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Background" Value="{DynamicResource BgInput}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Accent}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border x:Name="PwdBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="PwdBorder" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PwdBorder" Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <Border x:Name="CheckBoxBorder" Width="18" Height="18" CornerRadius="5"
+                                    Background="{DynamicResource BgInput}"
+                                    BorderBrush="{DynamicResource BorderStrong}" BorderThickness="1"
+                                    VerticalAlignment="Center">
+                                <Path x:Name="CheckMark" Data="M2,7 L6,11 L13,3"
+                                      Stroke="#FFFFFF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckBoxBorder" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="CheckBoxBorder" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Background" Value="{DynamicResource BgInput}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="ComboRoot" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="10"/>
+                            <ContentPresenter x:Name="ContentSite" Margin="10,0,30,0" VerticalAlignment="Center"
+                                              HorizontalAlignment="Left" IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"/>
+                            <ToggleButton Focusable="False" ClickMode="Press" Background="Transparent" BorderThickness="0"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent">
+                                            <Path Data="M0,0 L8,0 L4,5 Z" Fill="{DynamicResource TextMuted}"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+                                <Border MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                        Background="{DynamicResource BgCardAlt}" BorderBrush="{DynamicResource BorderSoft}"
+                                        BorderThickness="1" CornerRadius="10" Margin="0,4,0,0">
+                                    <ScrollViewer>
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ComboRoot" Property="BorderBrush" Value="{DynamicResource BorderStrong}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Padding" Value="10,7"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="ItemBorder" Background="{TemplateBinding Background}"
+                                            CornerRadius="8" Padding="{TemplateBinding Padding}" Margin="4,2">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsHighlighted" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource BgInput}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource AccentSoft}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ProgressBar">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Background" Value="{DynamicResource BgInput}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <Grid x:Name="PART_Track">
+                                <Border x:Name="PART_Indicator" Background="{TemplateBinding Foreground}"
+                                        CornerRadius="4" HorizontalAlignment="Left"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Slider">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid VerticalAlignment="Center">
+                            <Border Height="5" CornerRadius="3" Background="{DynamicResource BorderStrong}" VerticalAlignment="Center"/>
+                            <Track x:Name="PART_Track" VerticalAlignment="Center">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Focusable="False" IsTabStop="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="5" CornerRadius="3" Background="{DynamicResource Accent}"
+                                                        VerticalAlignment="Center"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="16" Height="16">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="{DynamicResource Accent}" Stroke="{DynamicResource BgMain}"
+                                                         StrokeThickness="2"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Focusable="False" IsTabStop="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- macOS-style scrollbar: без стрелок, прозрачный фон, тонкий скруглённый ползунок -->
+        <Style x:Key="MacScrollThumb" TargetType="Thumb">
+            <Setter Property="MinHeight" Value="26"/>
+            <Setter Property="MinWidth" Value="26"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border x:Name="ThumbBody" Background="#66A8B4C4" CornerRadius="4" Margin="1"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbBody" Property="Background" Value="#B3A8B4C4"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbBody" Property="Background" Value="#D9C3CEDD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="MinWidth" Value="6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" Focusable="False" IsDirectionReversed="True"
+                                   Orientation="{TemplateBinding Orientation}">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                                  Focusable="False" IsTabStop="False" Opacity="0"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource MacScrollThumb}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                                  Focusable="False" IsTabStop="False" Opacity="0"/>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Height" Value="6"/>
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinHeight" Value="6"/>
+                </Trigger>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Width" Value="6"/>
+                    <Setter Property="Height" Value="Auto"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource BgCardAlt}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentSoft}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        </Style>
+
+        <Style x:Key="CardBorder" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource BgCard}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="16"/>
+        </Style>
+
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="WindowShell" Margin="16" Background="{DynamicResource BgMain}"
+            BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="12">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="26" ShadowDepth="6" Opacity="0.55" Color="#000000"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="46"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ================= ЗАГОЛОВОК ОКНА ================= -->
+            <Grid Grid.Row="0" x:Name="TitleBar" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+                    <Image Source="Assets/Robust.ico" Width="20" Height="20" VerticalAlignment="Center"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="Robust" FontSize="12.5" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                               VerticalAlignment="Center" Margin="9,0,0,0"/>
+                    <Border Background="{DynamicResource BgCardAlt}" CornerRadius="8" Padding="7,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="VersionText" Text="v1.0.0" FontSize="10.5" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Button x:Name="MinimizeWindowBtn" Style="{StaticResource ChromeButton}" Content="—"
+                            Click="MinimizeWindowBtn_Click" ToolTip="Свернуть"/>
+                    <Button x:Name="CloseWindowBtn" Style="{StaticResource CloseChromeButton}" Content="✕"
+                            Click="CloseWindowBtn_Click" Margin="4,0,0,0" ToolTip="Закрыть"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ================= ПРОФИЛЬ И БАЛАНС ================= -->
+            <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="20,0,20,12" Padding="18,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Width="46" Height="46" CornerRadius="12" Background="{DynamicResource AccentSoft}"
+                            BorderBrush="{DynamicResource Accent}" BorderThickness="1" VerticalAlignment="Center">
+                        <TextBlock x:Name="ProfileAvatarText" Text="?" FontSize="18" FontWeight="Bold"
+                                   Foreground="{DynamicResource Accent}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                        <TextBlock x:Name="ProfileUsernameText" Text="Гость" FontSize="16" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}"/>
+                        <TextBlock x:Name="ProfileConnectionText" Text="Лаунчер не подключён к аккаунту"
+                                   FontSize="11.5" Foreground="{DynamicResource TextMuted}" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="18,0,22,0">
+                        <TextBlock Text="Основной баланс" FontSize="11" Foreground="{DynamicResource TextMuted}"/>
+                        <TextBlock x:Name="ProfileBalanceText" Text="0.00 ₽" FontSize="20" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}" Margin="0,1,0,0"/>
+                    </StackPanel>
+
+                    <Border Grid.Column="3" Background="{DynamicResource AccentSoft}" CornerRadius="10" Padding="12,7"
+                            VerticalAlignment="Center" Margin="0,0,16,0">
+                        <StackPanel>
+                            <TextBlock Text="В процессе начисления" FontSize="10.5" Foreground="{DynamicResource TextSecondary}"/>
+                            <TextBlock x:Name="ProfilePendingText" Text="+0.00 ₽" FontSize="15" FontWeight="Bold"
+                                       Foreground="{DynamicResource Accent}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="LoginWebsiteBtn" Content="Войти через сайт" Style="{StaticResource PrimaryButton}"
+                                Click="LoginWebsiteBtn_Click" Padding="16,9"/>
+                        <Button x:Name="ChangeAccountBtn" Content="Сменить аккаунт" Style="{StaticResource AppButton}"
+                                Click="LoginWebsiteBtn_Click" Padding="14,8" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ================= УВЕДОМЛЕНИЕ ОБ ОБНОВЛЕНИИ ================= -->
+            <Border x:Name="UpdateBanner" Grid.Row="2" Background="{DynamicResource BgCardAlt}"
+                    BorderBrush="{DynamicResource Warning}" BorderThickness="1" CornerRadius="12"
+                    Margin="20,0,20,12" Padding="14,10" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock x:Name="UpdateText" Text="Доступно обновление лаунчера!" FontSize="13" FontWeight="Bold"
+                                   Foreground="{DynamicResource Warning}"/>
+                        <ProgressBar x:Name="UpdateProgressBar" Height="6" Margin="0,8,0,0" Visibility="Collapsed" Maximum="100"/>
+                    </StackPanel>
+                    <Button x:Name="UpdateNowBtn" Grid.Column="1" Content="Обновить" Style="{StaticResource PrimaryButton}"
+                            Click="UpdateNowBtn_Click" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- ================= ВКЛАДКИ ================= -->
+            <Grid Grid.Row="3" Margin="20,0,20,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Border Background="{DynamicResource BgCardAlt}" CornerRadius="12" Padding="3">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="TabTasksBtn" Content="Активные задания" Style="{StaticResource TabButton}"
+                                Tag="active" Click="TabTasksBtn_Click"/>
+                        <Button x:Name="TabSettingsBtn" Content="Настройки" Style="{StaticResource TabButton}"
+                                Click="TabSettingsBtn_Click" Margin="3,0,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Background="{DynamicResource BgCard}" BorderBrush="{DynamicResource BorderSoft}"
+                        BorderThickness="1" CornerRadius="10" Padding="11,6" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="7" Height="7" Fill="{DynamicResource TextMuted}" VerticalAlignment="Center" x:Name="WsDot"/>
+                        <TextBlock x:Name="WsStatusText" Text="Платформа: не подключена" FontSize="11.5"
+                                   Foreground="{DynamicResource TextSecondary}" Margin="7,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ================= СТРАНИЦА: АКТИВНЫЕ ЗАДАНИЯ ================= -->
+            <Grid x:Name="TasksTabPanel" Grid.Row="4" Margin="20,0,20,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="392"/>
+                    <ColumnDefinition Width="14"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+                    <StackPanel>
+                        <!-- Автопоток -->
+                        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Автопоток" Style="{StaticResource SectionTitle}" Margin="0"/>
+                                </Grid>
+
+                                <CheckBox x:Name="AutoFlowToggle" Style="{StaticResource SwitchCheckBox}"
+                                          Content="Включить Автопоток"
+                                          Checked="AutoFlowToggle_Changed" Unchecked="AutoFlowToggle_Changed"
+                                          Margin="0,0,0,12"/>
+
+                                <TextBlock Text="Фильтр подбора заданий" Style="{StaticResource FieldLabel}"/>
+                                <ComboBox x:Name="AutoFlowFilterComboBox" SelectionChanged="AutoFlowFilter_Changed" Margin="0,0,0,10">
+                                    <ComboBoxItem Content="Сначала самые дорогие (₽/мин)" Tag="price"/>
+                                    <ComboBoxItem Content="Сначала короткие по времени" Tag="short"/>
+                                    <ComboBoxItem Content="Любые доступные задания" Tag="any"/>
+                                </ComboBox>
+
+                                <TextBlock x:Name="AutoFlowStatusText" Text="Автопоток выключен"
+                                           FontSize="11.5" Foreground="{DynamicResource TextMuted}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Аккаунты -->
+                        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Аккаунты Roblox" Style="{StaticResource SectionTitle}" Margin="0"/>
+                                </Grid>
+
+                                <TextBlock Text="Прокси для нового аккаунта (socks5://ip:port)" Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="ProxyInputBox" Margin="0,0,0,10"/>
+
+                                <Button x:Name="BrowserLoginBtn" Content="Войти / создать аккаунт в браузере"
+                                        Style="{StaticResource PrimaryButton}" Click="BrowserLoginBtn_Click" Margin="0,0,0,10"/>
+
+                                <TextBlock Text="Или вставьте куку .ROBLOSECURITY вручную" Style="{StaticResource FieldLabel}"/>
+                                <PasswordBox x:Name="CookieInputBox" Margin="0,0,0,8"/>
+                                <Button x:Name="AddAccountBtn" Content="Добавить по куке"
+                                        Click="AddAccountBtn_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Статус и управление -->
+                        <Border Style="{StaticResource CardBorder}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Статус задания" Style="{StaticResource SectionTitle}" Margin="0"/>
+                                    <Button x:Name="ShowRulesBtn" Grid.Column="2" Content="Правила"
+                                            Click="ShowRulesBtn_Click" Padding="10,4" FontSize="11"/>
+                                </Grid>
+
+                                <TextBlock Text="Если окно игры закрыто вручную" Style="{StaticResource FieldLabel}"/>
+                                <ComboBox x:Name="ManualCloseModeComboBox" SelectionChanged="OptimizationControl_Changed" Margin="0,0,0,12">
+                                    <ComboBoxItem Content="Спрашивать: открыть снова или завершить"/>
+                                    <ComboBoxItem Content="Всегда открывать окно заново (авто)"/>
+                                    <ComboBoxItem Content="Сразу завершать задание с тайм-аутом"/>
+                                </ComboBox>
+
+                                <Border x:Name="ContractStatusBadge" Background="{DynamicResource BgCardAlt}" CornerRadius="10" Padding="11,8" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock x:Name="ContractStatusText" Text="Статус: готов к запуску"
+                                                   FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource Accent}"
+                                                   TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="MutexStatusText" Text="Мьютекс: проверка..."
+                                                   FontSize="11" Foreground="{DynamicResource TextMuted}" Margin="0,4,0,0"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Button x:Name="StopAllBtn" Content="Остановить все окна"
+                                        Style="{StaticResource DangerButton}" Click="StopAllBtn_Click" Padding="12,9"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="14"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Карточки активных окон -->
+                    <Border Grid.Row="0" Style="{StaticResource CardBorder}" Padding="16,14">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,10">
+                                <TextBlock Text="Активные окна Roblox" Style="{StaticResource SectionTitle}" Margin="0"/>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock x:Name="ActiveWindowsCountText" Text="Окон: 0" FontSize="11.5"
+                                               Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <Border Background="{DynamicResource BgCardAlt}" CornerRadius="8" Padding="9,4">
+                                        <TextBlock x:Name="RamUsageText" Text="ОЗУ: 0 МБ" FontSize="11"
+                                                   FontWeight="SemiBold" Foreground="{DynamicResource Info}"/>
+                                    </Border>
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Grid>
+                                <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                                    <ItemsControl x:Name="ActiveSessionsItems">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="304" Background="{DynamicResource BgCardAlt}"
+                                                        BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                                        CornerRadius="12" Padding="13" Margin="0,0,10,10">
+                                                    <StackPanel>
+                                                        <DockPanel>
+                                                            <TextBlock Text="{Binding Username}" FontSize="13" FontWeight="Bold"
+                                                                       Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
+                                                            <Border DockPanel.Dock="Right" Background="{DynamicResource BgCard}"
+                                                                    CornerRadius="8" Padding="7,2">
+                                                                <TextBlock Text="{Binding StatusText}" FontSize="10.5" FontWeight="SemiBold"
+                                                                           Foreground="{Binding StatusColor}"/>
+                                                            </Border>
+                                                        </DockPanel>
+                                                        <TextBlock Text="{Binding DetailText}" FontSize="10.5"
+                                                                   Foreground="{DynamicResource TextMuted}" Margin="0,5,0,0"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                        <ProgressBar Value="{Binding ProgressValue}" Maximum="100" Margin="0,10,0,6"/>
+                                                        <DockPanel>
+                                                            <TextBlock Text="{Binding TimerText}" FontSize="11.5" FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource TextSecondary}"/>
+                                                            <TextBlock DockPanel.Dock="Right" Text="{Binding JobId}" FontSize="10.5"
+                                                                       Foreground="{DynamicResource TextMuted}" TextTrimming="CharacterEllipsis"
+                                                                       MaxWidth="150"/>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+
+                                <TextBlock x:Name="EmptySessionsText" Text="Пока нет активных окон. Добавьте аккаунт и запустите задание."
+                                           FontSize="12" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" Margin="0,20,0,20"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Аккаунты и сессии -->
+                    <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="16,14">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                                <TextBlock Text="Загруженные аккаунты" Style="{StaticResource SectionTitle}" Margin="0"/>
+                                <Button x:Name="RemoveAccountBtn" Content="Удалить выбранный" DockPanel.Dock="Right"
+                                        Click="RemoveSelectedAccountBtn_Click" Padding="10,5" FontSize="11"/>
+                            </DockPanel>
+
+                            <Border Grid.Row="1" Background="{DynamicResource BgCardAlt}"
+                                    BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="10" Padding="2">
+                                <DataGrid x:Name="AccountsGrid"
+                                          MouseDoubleClick="AccountsGrid_MouseDoubleClick"
+                                          AutoGenerateColumns="False" IsReadOnly="True"
+                                          Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                          RowBackground="Transparent" AlternatingRowBackground="{DynamicResource BgCardAlt}"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource BorderSoft}"
+                                          BorderThickness="0"
+                                          SelectionMode="Single" HeadersVisibility="Column"
+                                          RowHeight="30" FontSize="11.5">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" Width="100"/>
+                                        <DataGridTextColumn Header="Никнейм" Binding="{Binding Username}" Width="150"/>
+                                        <DataGridTextColumn Header="Прокси" Binding="{Binding ProxyDisplay}" Width="120"/>
+                                        <DataGridTextColumn Header="Статус окна" Binding="{Binding StatusText}" Width="190"/>
+                                        <DataGridTextColumn Header="JobId" Binding="{Binding CurrentJobId}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- ================= СТРАНИЦА: НАСТРОЙКИ ================= -->
+            <ScrollViewer x:Name="SettingsTabPanel" Grid.Row="4" Margin="20,0,20,0" VerticalScrollBarVisibility="Auto"
+                          Visibility="Collapsed" Padding="0,0,6,0">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="14"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="Оформление" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="Тема оформления" Style="{StaticResource FieldLabel}"/>
+                                <ComboBox x:Name="ThemeComboBox" SelectionChanged="ThemeComboBox_SelectionChanged" Margin="0,0,0,12">
+                                    <ComboBoxItem Content="Тёмная тема"/>
+                                    <ComboBoxItem Content="Светлая тема"/>
+                                </ComboBox>
+
+                                <CheckBox x:Name="MinimizeToTrayCheckBox" Content="Сворачивать в системный трей при закрытии"
+                                          Checked="TraySetting_Changed" Unchecked="TraySetting_Changed" Margin="0,0,0,10"/>
+                                <CheckBox x:Name="SoundOnCompleteCheckBox" Content="Звуковое оповещение о завершении задания"
+                                          Checked="SoundSetting_Changed" Unchecked="SoundSetting_Changed"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="Аккаунт и программа" Style="{StaticResource SectionTitle}"/>
+                                <Border Background="{DynamicResource BgCardAlt}" CornerRadius="10" Padding="12" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock x:Name="SettingsUsernameText" Text="Гость" FontSize="14" FontWeight="Bold"
+                                                   Foreground="{DynamicResource TextPrimary}"/>
+                                        <TextBlock x:Name="SettingsProfileText" Text="Аккаунт не подключён"
+                                                   FontSize="11.5" Foreground="{DynamicResource TextMuted}" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <Button x:Name="SettingsChangeAccountBtn" Content="Сменить аккаунт"
+                                        Click="LoginWebsiteBtn_Click" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Версия программы:" FontSize="12" Foreground="{DynamicResource TextSecondary}"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="SettingsVersionText" Grid.Column="1" Text="v1.0.0"
+                                               FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                                <Button x:Name="CheckUpdateBtn" Content="Проверить обновления"
+                                        Click="CheckUpdateBtn_Click" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Оптимизация Roblox" Style="{StaticResource SectionTitle}"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="14"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Режим окон (снижение нагрузки на GPU)" Style="{StaticResource FieldLabel}"/>
+                                    <ComboBox x:Name="WindowModeComboBox" SelectionChanged="OptimizationControl_Changed" Margin="0,0,0,10">
+                                        <ComboBoxItem Content="Полное сворачивание (0% GPU)"/>
+                                        <ComboBoxItem Content="Скрыть за пределы экрана"/>
+                                        <ComboBoxItem Content="Мини-плитка 200×150"/>
+                                        <ComboBoxItem Content="Обычное окно"/>
+                                    </ComboBox>
+
+                                    <TextBlock Text="Сжатие оперативной памяти" Style="{StaticResource FieldLabel}"/>
+                                    <ComboBox x:Name="RamModeComboBox" SelectionChanged="OptimizationControl_Changed" Margin="0,0,0,10">
+                                        <ComboBoxItem Content="Экстремальное (Hard Cap + 5 сек)"/>
+                                        <ComboBoxItem Content="Сбалансированное (Hard Cap + 15 сек)"/>
+                                        <ComboBoxItem Content="Мягкое (кэш каждые 30 сек)"/>
+                                        <ComboBoxItem Content="Отключено"/>
+                                    </ComboBox>
+
+                                    <Grid Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Лимит ОЗУ на окно" Style="{StaticResource FieldLabel}" Margin="0"/>
+                                        <TextBlock x:Name="RamSliderValueText" Grid.Column="1" Text="140 МБ"
+                                                   FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource Accent}"/>
+                                    </Grid>
+                                    <Slider x:Name="RamLimitSlider" Minimum="80" Maximum="600" Value="140"
+                                            TickFrequency="20" IsSnapToTickEnabled="True"
+                                            ValueChanged="RamLimitSlider_ValueChanged" Margin="0,0,0,10"/>
+
+                                    <CheckBox x:Name="EcoQosCheckBox" Content="EcoQoS + приоритет Idle" IsChecked="True"
+                                              Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"
+                                              Margin="0,0,0,8"/>
+                                    <CheckBox x:Name="SmartWakeupCheckBox" Content="Разворачивать окна для Anti-AFK" IsChecked="True"
+                                              Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Лимит FPS" Style="{StaticResource FieldLabel}"/>
+                                            <ComboBox x:Name="FpsCapComboBox" SelectionChanged="OptimizationControl_Changed">
+                                                <ComboBoxItem Content="5 FPS" Tag="5"/>
+                                                <ComboBoxItem Content="8 FPS" Tag="8"/>
+                                                <ComboBoxItem Content="10 FPS" Tag="10"/>
+                                                <ComboBoxItem Content="15 FPS" Tag="15"/>
+                                                <ComboBoxItem Content="30 FPS" Tag="30"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Anti-AFK" Style="{StaticResource FieldLabel}"/>
+                                            <ComboBox x:Name="AntiAfkIntervalComboBox" SelectionChanged="OptimizationControl_Changed">
+                                                <ComboBoxItem Content="1 мин" Tag="1"/>
+                                                <ComboBoxItem Content="3 мин" Tag="3"/>
+                                                <ComboBoxItem Content="5 мин" Tag="5"/>
+                                                <ComboBoxItem Content="10 мин" Tag="10"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Text="Действия Anti-AFK по очереди" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                                    <WrapPanel>
+                                        <CheckBox x:Name="AfkJumpCheckBox" Content="Прыжок" IsChecked="True" Margin="0,0,14,8"
+                                                  Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                        <CheckBox x:Name="AfkWalkCheckBox" Content="Ходьба" IsChecked="True" Margin="0,0,14,8"
+                                                  Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                        <CheckBox x:Name="AfkStrafeCheckBox" Content="Стрейф" Margin="0,0,14,8"
+                                                  Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                        <CheckBox x:Name="AfkCameraRotateCheckBox" Content="Камера" IsChecked="True" Margin="0,0,14,8"
+                                                  Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                        <CheckBox x:Name="AfkCameraZoomCheckBox" Content="Зум" Margin="0,0,14,8"
+                                                  Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                        <CheckBox x:Name="AfkMouseClickCheckBox" Content="Клик мыши" Margin="0,0,14,8"
+                                                  Checked="OptimizationControl_Changed" Unchecked="OptimizationControl_Changed"/>
+                                    </WrapPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Button x:Name="ForceTrimRamBtn" Content="Сжать ОЗУ сейчас"
+                                                Click="ForceTrimRamBtn_Click" Padding="12,8" Margin="0,0,8,0"/>
+                                        <Button x:Name="TestAntiAfkBtn" Content="Тест Anti-AFK"
+                                                Click="TestAntiAfkBtn_Click" Padding="12,8"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Технический журнал" Style="{StaticResource SectionTitle}" Margin="0"/>
+                                <CheckBox x:Name="ShowLogCheckBox" Grid.Column="1" Content="Показать"
+                                          VerticalAlignment="Center"
+                                          Checked="ShowLogCheckBox_Changed" Unchecked="ShowLogCheckBox_Changed"/>
+                            </Grid>
+                            <TextBlock Text="Обычные события и ошибки тихо записываются в logs/launcher.log."
+                                       FontSize="11.5" Foreground="{DynamicResource TextMuted}" Margin="0,0,0,8"/>
+                            <Border x:Name="LogPanel" Background="{DynamicResource BgInput}" CornerRadius="10" Padding="10"
+                                    BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" Visibility="Collapsed">
+                                <TextBox x:Name="LogConsoleBox" Background="Transparent" Foreground="{DynamicResource TextSecondary}"
+                                         BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap" Height="150"
+                                         VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ================= НИЖНЯЯ СТРОКА ================= -->
+            <Border Grid.Row="5" Margin="20,10,20,16" Padding="0,0,0,0">
+                <DockPanel>
+                    <TextBlock x:Name="FooterStatusText" Text="Готов к работе" FontSize="11"
+                               Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Robust" DockPanel.Dock="Right" FontSize="11"
+                               Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right"/>
+                </DockPanel>
+            </Border>
+
+            <!-- ================= МОДАЛЬНОЕ ОКНО: НАСТРОЙКА АККАУНТА ================= -->
+            <Border x:Name="AccountModalBackdrop" Grid.RowSpan="6" Background="#B3000000"
+                    Visibility="Collapsed" Panel.ZIndex="200"
+                    MouseLeftButtonDown="AccountModalBackdrop_MouseLeftButtonDown">
+                <Border Width="600" Background="{DynamicResource BgCard}" BorderBrush="{DynamicResource BorderSoft}"
+                        BorderThickness="1" CornerRadius="12" Padding="22"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        MouseLeftButtonDown="AccountModalCard_MouseLeftButtonDown">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="34" ShadowDepth="8" Opacity="0.55" Color="#000000"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Настройка аккаунта Roblox" FontSize="18" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}"/>
+                                <TextBlock Text="Проверка сессии, заметка и профиль Roblox"
+                                           FontSize="11.5" Foreground="{DynamicResource TextMuted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                            <Button Style="{StaticResource ChromeButton}" Content="✕" DockPanel.Dock="Right"
+                                    Click="CloseAccountModal_Click" Width="34" Height="30"/>
+                        </DockPanel>
+
+                        <Border Background="{DynamicResource BgCardAlt}" CornerRadius="10" Padding="14"
+                                BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" Margin="0,0,0,14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Width="48" Height="48" CornerRadius="12" Background="{DynamicResource AccentSoft}"
+                                        BorderBrush="{DynamicResource Accent}" BorderThickness="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="AccModalAvatar" Text="?" FontSize="19" FontWeight="Bold"
+                                               Foreground="{DynamicResource Accent}" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock x:Name="AccModalUsername" Text="Аккаунт" FontSize="15" FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimary}"/>
+                                    <TextBlock x:Name="AccModalUserId" Text="ID: —" FontSize="11.5"
+                                               Foreground="{DynamicResource TextMuted}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="AccModalStatus" Text="Статус: —" FontSize="11.5"
+                                               Foreground="{DynamicResource TextSecondary}" Margin="0,2,0,0"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <WrapPanel Margin="0,0,0,14">
+                            <Button x:Name="AccModalOpenBtn" Content="Открыть профиль Roblox"
+                                    Style="{StaticResource PrimaryButton}" Click="OpenAccountInRoblox_Click"
+                                    Padding="14,9" Margin="0,0,8,8"/>
+                            <Button x:Name="AccModalValidateBtn" Content="Проверить аккаунт"
+                                    Click="ValidateAccount_Click" Padding="14,9" Margin="0,0,8,8"/>
+                            <Button x:Name="AccModalDeleteBtn" Content="Удалить из списка"
+                                    Click="DeleteAccountFromModal_Click" Padding="14,9" Margin="0,0,8,8"/>
+                        </WrapPanel>
+
+                        <TextBlock Text="Заметка к аккаунту" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="AccModalNote" Height="74" TextWrapping="Wrap" AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+                        <Button Content="Сохранить заметку" Click="SaveAccountNote_Click"
+                                HorizontalAlignment="Left" Padding="14,8"/>
+                    </StackPanel>
+                </Border>
+            </Border>
+            <!-- ================= ОБЯЗАТЕЛЬНОЕ ОБНОВЛЕНИЕ ================= -->
+            <Border x:Name="MandatoryUpdateOverlay" Grid.RowSpan="6" Background="#F20B1017"
+                    Visibility="Collapsed" Panel.ZIndex="300">
+                <Border Width="540" Background="{DynamicResource BgCard}" BorderBrush="{DynamicResource Accent}"
+                        BorderThickness="1" CornerRadius="12" Padding="30"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="40" ShadowDepth="10" Opacity="0.65" Color="#000000"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <Image Source="Assets/Robust.ico" Width="72" Height="72" HorizontalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Доступно обязательное обновление Robust"
+                                   FontSize="21" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                                   TextAlignment="Center" TextWrapping="Wrap" Margin="0,18,0,8"/>
+                        <TextBlock Text="Программа сейчас обновится автоматически. Старая версия больше не может получать задания."
+                                   FontSize="12.5" Foreground="{DynamicResource TextSecondary}"
+                                   TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,18"/>
+                        <ProgressBar x:Name="MandatoryUpdateProgress" Height="7" Maximum="100" Value="0"
+                                     Margin="0,0,0,10"/>
+                        <TextBlock x:Name="MandatoryUpdateStatus" Text="Подготовка обновления..."
+                                   FontSize="11.5" Foreground="{DynamicResource TextMuted}"
+                                   TextAlignment="Center" TextWrapping="Wrap"/>
+                        <Button x:Name="MandatoryUpdateRetryBtn" Content="Повторить обновление"
+                                Style="{StaticResource PrimaryButton}" Click="MandatoryUpdateRetryBtn_Click"
+                                HorizontalAlignment="Center" Margin="0,16,0,0" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+

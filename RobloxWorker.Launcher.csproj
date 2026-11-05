@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Robust</AssemblyName>
+    <RootNamespace>RobloxWorker.Launcher</RootNamespace>
+    <Product>Robust</Product>
+    <AssemblyTitle>Robust</AssemblyTitle>
+    <Description>Robust — лаунчер заданий Roblox</Description>
+    <ApplicationIcon>Assets\Robust.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Robust.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Убираем глобальные WinForms/Drawing using, чтобы не конфликтовали с WPF. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
+    <PackageReference Include="Velopack" Version="0.0.942" />
+  </ItemGroup>
+
+</Project>
